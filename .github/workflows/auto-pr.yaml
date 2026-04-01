@@ -1,0 +1,36 @@
+name: Auto Pull Request to Main
+
+on:
+  push:
+    branches-ignore:
+      - main
+
+jobs:
+  create-pr:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+
+    steps:
+      # 1. Checkout the branch that triggered the push
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # 2. Create a Pull Request directly
+      - name: Create Pull Request to main
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          BRANCH_NAME="${GITHUB_REF_NAME}"
+          PR_TITLE="Auto PR: ${BRANCH_NAME} → main"
+          PR_BODY="This PR was automatically created for branch \`${BRANCH_NAME}\`."
+          
+          # Check if PR already exists
+          if gh pr list --base main --head "$BRANCH_NAME" --state open | grep -q "$BRANCH_NAME"; then
+            echo "PR already exists for $BRANCH_NAME."
+          else
+            gh pr create --base main --head "$BRANCH_NAME" \
+              --title "$PR_TITLE" \
+              --body "$PR_BODY"
+          fi
