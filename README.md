@@ -1,10 +1,10 @@
-# Flamingo GitOps Engine
+# FlamingGo GitOps Engine
 
-Flamingo GitOps Engine is a lightweight, pure-Go implementation of a GitOps agent for Kubernetes. It is designed to pull raw Kubernetes YAML manifests from a specified branch in a remote Git repository and automatically apply them to a cluster using the Kubernetes Dynamic Client.
+FlaminGo GitOps Engine is a lightweight, pure-Go implementation of a GitOps agent for Kubernetes. It is designed to pull raw Kubernetes YAML manifests from a specified branch in a remote Git repository and automatically apply them to a cluster using the Kubernetes Dynamic Client.
 
 ## Architecture
 
-At a high level, Flamingo GitOps Engine performs the following workflow:
+At a high level, FlaminGo GitOps Engine performs the following workflow:
 
 ```mermaid
 graph TD
