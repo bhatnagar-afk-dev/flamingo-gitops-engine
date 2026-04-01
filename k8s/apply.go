@@ -1,3 +1,4 @@
+// Package k8s handles dynamic operations with the Kubernetes API Server.
 package k8s
 
 import (
@@ -13,6 +14,8 @@ import (
 	"k8s.io/client-go/rest"
 )
 
+// ApplyYAML takes raw YAML configuration data, decodes it into an unstructured Kubernetes object,
+// and applies it to the cluster (create or update). It builds a dynamic client using in-cluster configuration.
 func ApplyYAML(yamlData []byte) error {
 	config, err := rest.InClusterConfig()
 	if err != nil {
@@ -53,7 +56,9 @@ func ApplyYAML(yamlData []byte) error {
 	return nil
 }
 
-// simplified version
+// GetGVR dynamically resolves the GroupVersionResource (GVR) associated with the specified unstructured Kubernetes object.
+// GVRs are required by the Kubernetes dynamic client to locate the correct REST API endpoint for the resource.
+// Note: This relies on a simplified heuristic appending "s" to the Resource kind and won't work perfectly for irregular plurals.
 func GetGVR(obj *unstructured.Unstructured) (schema.GroupVersionResource, error) {
 	gvk := obj.GroupVersionKind()
 

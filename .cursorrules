@@ -1,0 +1,37 @@
+# Flamingo GitOps Engine - AI Specification & Guidelines
+
+This document provides architectural context, strict conventions, and toolchain rules for AI coding assistants working in this repository.
+
+## Technology Stack
+- **Language**: Go
+- **Git Operations**: `github.com/go-git/go-git/v5`
+- **Kubernetes Client**: `k8s.io/client-go/dynamic` (for unstructured dynamic application)
+- **Manifest Parsing**: `k8s.io/apimachinery/pkg/runtime/serializer/yaml`
+
+## Core Paradigms
+
+1. **Simplicity Over Abstraction**: The engine aims to be highly readable. Avoid adding convoluted layers of interfaces or abstraction where simple imperative code will suffice.
+2. **Dynamic Kubernetes Application**: 
+    - Always use the **dynamic client** (`k8s.io/client-go/dynamic`) when dealing with YAML application logic.
+    - We do not use typed structs (e.g., `appsv1.Deployment`) for resource management because we must support CustomResourceDefinitions (CRDs) seamlessly.
+3. **In-Cluster Execution**: The engine is intended to run *inside* the cluster it manages. Default to `rest.InClusterConfig()` for authentication.
+
+## Coding Conventions
+
+### 1. Error Handling
+- Never silence errors unless explicitly documented why (`_ = ...`).
+- Whenever possible, bubble errors up to the caller to handle and log. Use `fmt.Errorf("failed to do X: %w", err)` for contextual wrapping.
+
+### 2. Godoc
+- All exported functions **must** have a Godoc string starting with the function name.
+- Document edge cases, panic behavior, and significant hidden side effects (such as creating temporary files that need cleanup).
+
+### 3. File System
+- Do not hardcode filesystem paths. Always leverage `os.MkdirTemp` to ensure atomic, non-conflicting filesystem allocations.
+
+## Known Limitations / Future Improvements
+- **Resource Pluralization**: `k8s.GetGVR` currently performs a naive lowercase + "s" string concatenation. This is a known technical debt that fails on irregular plurals (e.g. `Ingress` -> `ingresss`). Future enhancements should leverage the Discovery client to retrieve precise GVR endpoints. 
+- **Cleanup**: In `main.go`, we do not currently defer removal of the cloned repository folder.
+- **Syncing Loop**: The agent runs a single shot command, it does not currently act as an infinite controller loop.
+
+*End of AI Context.*

@@ -1,4 +1,4 @@
-package flamingogitopsengine
+package main
 
 import (
 	"fmt"
